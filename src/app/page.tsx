@@ -14,6 +14,12 @@ export default async function LandingPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#0d1117] px-4">
+      {/* Nav */}
+      <nav className="fixed top-0 right-0 p-4">
+        <a href="/gallery" className="text-sm text-[#8b949e] hover:text-white transition-colors">
+          Gallery →
+        </a>
+      </nav>
       {/* Hero */}
       <div className="flex flex-col items-center gap-8 text-center max-w-2xl">
         {/* Wordmark */}
