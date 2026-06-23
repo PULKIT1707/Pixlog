@@ -10,7 +10,7 @@ const envSchema = z.object({
 
   // NextAuth
   NEXTAUTH_SECRET: z.string().default("dev-secret-change-in-production"),
-  NEXTAUTH_URL: z.string().url().default("http://localhost:3000"),
+  NEXTAUTH_URL: z.string().url().default("http://localhost:3000").optional(),
 
   // Supabase
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
