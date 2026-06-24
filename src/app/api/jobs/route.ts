@@ -1,10 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { auth } from "@/lib/auth";
 import { createServerClient } from "@/lib/supabase/server";
 import { getInstallationId, getInstallationToken } from "@/lib/github/app";
 import { getYearConfig, cellToDate } from "@/lib/pixel/calendar";
+import { processPendingJobs } from "@/lib/processJob";
 import { INTENSITY_COMMIT_COUNT } from "@/types";
 import type { CommitSpec, IntensityLevel } from "@/types";
+
+// Allow up to 60s (Vercel Hobby max) for after() to push commits before the
+// function is torn down. Vercel Cron on Hobby only fires once/day, so jobs
+// are processed inline right after creation instead of via polling.
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -60,6 +66,10 @@ export async function POST(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Process the job inline after the response is sent — Vercel Cron on
+  // Hobby plan only fires once/day, so polling can't be relied on.
+  after(() => processPendingJobs(1));
 
   return NextResponse.json({ jobId });
 }
